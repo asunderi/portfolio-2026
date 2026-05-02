@@ -1,0 +1,96 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.svelte';
+import Hero from '../components/Hero.astro';
+import Gallery from '../components/Gallery.svelte';
+import About from '../components/About.svelte';
+import EasterEggs from '../components/EasterEggs.svelte';
+import { PERSONALITY } from '../data/skills.ts';
+---
+
+<Layout>
+  <Nav client:load />
+  <main>
+    <Hero />
+    <Gallery client:load />
+    <About client:load />
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <div class="foot-name">Anastacia Frost</div>
+          <div>© {new Date().getFullYear()} — designed, built, and over-thought in Michigan.</div>
+        </div>
+        <div class="foot-center">
+          <div>&#123; made with care, caffeine,</div>
+          <div>and approximately 4 cat interruptions &#125;</div>
+        </div>
+        <div class="foot-right">
+          <div>
+            <span class="foot-dot" title="this dot does nothing. it just blinks." aria-hidden="true"></span>
+            last touched {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </div>
+          <div class="foot-email">
+            <a href={`mailto:${PERSONALITY.email}`}>{PERSONALITY.email} ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="foot-shimmer">"the shimmer is everywhere now"</div>
+    </div>
+  </footer>
+
+  <EasterEggs client:load />
+</Layout>
+
+<style>
+  main { display: block; }
+
+  .foot-name {
+    color: var(--fg);
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+
+  .foot-center {
+    text-align: center;
+    color: var(--fg-dim);
+  }
+
+  .foot-right {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .foot-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-right: 8px;
+    vertical-align: middle;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .foot-email a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .foot-email a:hover { text-decoration: underline; }
+
+  .foot-shimmer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    opacity: 0.35;
+  }
+</style>
