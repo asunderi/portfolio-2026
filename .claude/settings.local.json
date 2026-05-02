@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(Get-Content \"C:\\\\Users\\\\Ana\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-Ana-Projects-portfolio-mid-2026-v2\\\\95896fcd-f145-45c6-b118-57f671fcd50c\\\\tasks\\\\b5lqh8ibg.output\" -Wait)",
+      "Bash(Select-String -Pattern \"Local|ready|error|Error\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\Ana\\\\Projects\\\\portfolio-mid-2026-v2\" -Force)",
+      "Bash(Select-Object Name, FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\Ana\\\\Projects\\\\portfolio-mid-2026-v2\" -Recurse -Force -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\Ana\\\\Projects\\\\portfolio-2025\" -Recurse -Force)",
+      "Bash(Select-Object FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\Ana\\\\Projects\\\\portfolio-2025\" -Force)",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "PowerShell(ls -Recurse \"C:\\\\Users\\\\Ana\\\\Projects\\\\portfolio-mid-2026-v2\\\\src\" -Force | where { !$_.PSIsContainer } | Select-Object FullName)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\Ana\\\\Projects\\\\portfolio-mid-2026-v2\\\\src\" -Recurse -File | ForEach-Object { $_.FullName })"
+    ]
+  }
+}

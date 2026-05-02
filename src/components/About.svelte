@@ -33,8 +33,8 @@
   const CATS: Filter[] = ['All', 'Design', 'Code', 'Tool'];
 
   const catColors: Record<string, { bg: string; fg: string }> = {
-    Design: { bg: 'rgba(95, 230, 196, 0.14)', fg: '#5fe6c4' },
-    Code:   { bg: 'rgba(199, 93, 122, 0.18)', fg: '#e88aa3' },
+    Design: { bg: 'rgba(16, 42, 36, 0.12)',    fg: '#102A24' },
+    Code:   { bg: 'rgba(166, 48, 85, 0.18)',   fg: '#A63055' },
     Tool:   { bg: 'rgba(245, 233, 220, 0.10)', fg: 'var(--fg-dim)' },
   };
 
@@ -267,7 +267,7 @@
     padding: 14px 18px;
     border: 0.5px solid var(--accent);
     background: var(--accent);
-    color: var(--bg);
+    color: #f5ede8;
     font-family: var(--mono);
     font-size: 11px;
     letter-spacing: 0.12em;
@@ -278,10 +278,10 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: background 0.2s;
+    transition: background 0.2s, border-color 0.2s;
   }
 
-  .resume-btn:hover { background: var(--accent-2); border-color: var(--accent-2); }
+  .resume-btn:hover { background: var(--accent-2); border-color: var(--accent-2); color: #f5ede8; }
 
   .resume-size { opacity: 0.65; }
 

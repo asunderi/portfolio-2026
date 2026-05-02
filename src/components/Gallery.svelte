@@ -15,7 +15,6 @@
     { x: 14,  y: 2,  r: 1.0  },
   ];
 
-  // desktop grid: row1=[0:7col,1:5col], row2=[2:4,3:4,4:4], row3=[5:5,6:7], row4=[7:12]
   const SPANS   = [7, 5, 4, 4, 4, 5, 7, 12];
   const RATIOS  = ['16 / 9', '4 / 5', '1 / 1', '1 / 1', '1 / 1', '4 / 5', '16 / 9', '21 / 9'];
 
@@ -70,7 +69,7 @@
       <h2 class="section-title">Things I made,<br />mostly on purpose.</h2>
     </div>
     <div class="gallery-count">
-      <div>{PROJECTS.length} projects · 2023 — 2025</div>
+      <div>{PROJECTS.length} projects · 2014 — 2023</div>
       <div class="accent-text">click any to expand</div>
     </div>
   </div>
@@ -79,7 +78,7 @@
     {#each PROJECTS as project, i}
       <button
         class="gallery-card"
-        style:grid-column="span {SPANS[i]}"
+        style:grid-column="span {SPANS[i % SPANS.length]}"
         style:transform={cardTransform(i)}
         onmouseenter={() => { hoveredCard = i; }}
         onmouseleave={() => { hoveredCard = null; }}
@@ -89,11 +88,15 @@
         <div
           class="card-thumb"
           class:card-thumb--hovered={hoveredCard === i}
-          style:aspect-ratio={RATIOS[i]}
+          style:aspect-ratio={RATIOS[i % RATIOS.length]}
           style:background={stripesBg(project, i)}
         >
+          {#if project.thumbnail}
+            <img class="card-img" src={project.thumbnail} alt={project.title} />
+            <div class="card-tint" style:background={project.color === 'mint' ? 'var(--surface)' : 'var(--accent)'}></div>
+          {/if}
           <span class="card-index">{String(i + 1).padStart(2, '0')} / {String(PROJECTS.length).padStart(2, '0')}</span>
-          <span class="card-initials" style:color={project.color === 'mint' ? 'var(--accent)' : 'var(--fg-dim)'}>
+          <span class="card-initials" style:color={project.color === 'mint' ? 'var(--accent)' : 'var(--accent-2)'}>
             {project.title.split(' ').map(w => w[0]).join('')}
           </span>
           <div class="card-bottom-row">
@@ -126,14 +129,17 @@
 
       <div
         class="modal-hero-shot"
-        style:background={activeProject.color === 'mint'
+        style:background={activeProject.thumbnail ? undefined : (activeProject.color === 'mint'
           ? 'repeating-linear-gradient(120deg, var(--surface) 0, var(--surface) 14px, var(--bg-2) 14px, var(--bg-2) 28px)'
-          : 'repeating-linear-gradient(60deg, var(--surface) 0, var(--surface) 10px, var(--bg-2) 10px, var(--bg-2) 20px)'}
+          : 'repeating-linear-gradient(60deg, var(--surface) 0, var(--surface) 10px, var(--bg-2) 10px, var(--bg-2) 20px)')}
       >
-        <span class="modal-hero-initials">
-          {activeProject.title.split(' ').map(w => w[0]).join('')}
-        </span>
-        <span class="modal-hero-label">[hero shot — replace with real]</span>
+        {#if activeProject.thumbnail}
+          <img class="modal-hero-img" src={activeProject.thumbnail} alt={activeProject.title} />
+        {:else}
+          <span class="modal-hero-initials">
+            {activeProject.title.split(' ').map(w => w[0]).join('')}
+          </span>
+        {/if}
       </div>
 
       <div class="modal-body">
@@ -162,14 +168,16 @@
         </div>
 
         <div class="modal-right">
-          <div class="modal-section-label">Process · {activeProject.images} shots</div>
-          <div class="shots-grid">
-            {#each { length: activeProject.images } as _, si}
-              <div class="shot">
-                <span class="shot-label">shot {String(si + 1).padStart(2, '0')}</span>
-              </div>
-            {/each}
-          </div>
+          {#if activeProject.images.length > 0}
+            <div class="modal-section-label">Process · {activeProject.images.length} shots</div>
+            <div class="shots-grid">
+              {#each activeProject.images as src, si}
+                <div class="shot">
+                  <img class="shot-img" {src} alt="Process shot {si + 1}" />
+                </div>
+              {/each}
+            </div>
+          {/if}
         </div>
       </div>
     </div>
@@ -241,9 +249,28 @@
     width: 100%;
     border-radius: 3px;
     overflow: hidden;
+    isolation: isolate;
     transition: transform 0.4s cubic-bezier(.7, 0, .2, 1),
                 box-shadow 0.4s cubic-bezier(.7, 0, .2, 1);
     box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+  }
+
+  .card-img {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: sepia(0%) hue-rotate(0deg) brightness(0.5) saturate(0%);
+    z-index: 0;
+  }
+
+  .card-tint {
+    position: absolute;
+    inset: 0;
+    mix-blend-mode: multiply;
+    z-index: 1;
+    pointer-events: none;
   }
 
   .card-thumb--hovered {
@@ -277,8 +304,8 @@
     font-size: clamp(60px, 14vw, 160px);
     font-weight: 400;
     letter-spacing: -0.03em;
-    opacity: 0.85;
-    mix-blend-mode: screen;
+    opacity: 0.12;
+    mix-blend-mode: multiply;
     pointer-events: none;
     user-select: none;
   }
@@ -401,7 +428,7 @@
     opacity: 0.9;
     font-weight: 400;
     letter-spacing: -0.03em;
-    mix-blend-mode: screen;
+    mix-blend-mode: multiply;
     pointer-events: none;
     user-select: none;
   }
@@ -486,19 +513,20 @@
   .shot {
     aspect-ratio: 4 / 3;
     border-radius: 3px;
-    background: repeating-linear-gradient(45deg, var(--surface) 0, var(--surface) 6px, var(--bg-2) 6px, var(--bg-2) 12px);
     border: 0.5px solid var(--line);
-    position: relative;
     overflow: hidden;
   }
 
-  .shot-label {
-    position: absolute; bottom: 10px; left: 10px;
-    font-family: var(--mono); font-size: 9px;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--fg-dim);
-    background: rgba(0, 0, 0, 0.4);
-    padding: 3px 8px; border-radius: 3px;
+  .shot-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .modal-hero-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   /* ── responsive ── */
