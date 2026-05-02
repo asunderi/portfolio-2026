@@ -1,66 +1,14 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { chaosLevel } from '../stores/ui.js';
-  import { PROJECTS, type Project } from '../data/projects.js';
+  import { PROJECTS } from '../data/projects.js';
 
-  // per-card stable drift offsets
-  const DRIFTS = [
-    { x: -8,  y: 14, r: -1.2 },
-    { x: 12,  y: -6, r: 0.8  },
-    { x: -4,  y: 22, r: -0.4 },
-    { x: 16,  y: 4,  r: 1.4  },
-    { x: -14, y: 8,  r: -0.9 },
-    { x: 6,   y: -12, r: 0.6 },
-    { x: -10, y: 18, r: -1.6 },
-    { x: 14,  y: 2,  r: 1.0  },
-  ];
+  let openRows = $state<Set<number>>(new Set());
 
-  const SPANS   = [7, 5, 4, 4, 4, 5, 7, 12];
-  const RATIOS  = ['16 / 9', '4 / 5', '1 / 1', '1 / 1', '1 / 1', '4 / 5', '16 / 9', '21 / 9'];
-
-  let hoveredCard = $state<number | null>(null);
-  let activeProject = $state<Project | null>(null);
-  let isDesktop = $state(false);
-  let chaos = $state(0);
-
-  onMount(() => {
-    isDesktop = window.innerWidth >= 1024;
-    return chaosLevel.subscribe(v => { chaos = v; });
-  });
-
-  function cardTransform(i: number): string {
-    if (!isDesktop || hoveredCard === i) return '';
-    const drift = DRIFTS[i % DRIFTS.length];
-    const mul = chaos <= 0.001 ? 0 : (0.4 + chaos * 1.6);
-    return `translate(${drift.x * mul}px, ${drift.y * mul}px) rotate(${drift.r * mul}deg)`;
-  }
-
-  function openModal(project: Project) {
-    activeProject = project;
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeModal() {
-    activeProject = null;
-    document.body.style.overflow = '';
-  }
-
-  function handleBackdropClick(e: MouseEvent) {
-    if (e.target === e.currentTarget) closeModal();
-  }
-
-  function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape') closeModal();
-  }
-
-  function stripesBg(project: Project, index: number): string {
-    return project.color === 'mint'
-      ? `repeating-linear-gradient(${90 + index * 7}deg, var(--accent) 0, var(--accent) 12px, var(--bg-2) 12px, var(--bg-2) 24px)`
-      : `repeating-linear-gradient(${45 + index * 11}deg, var(--accent) 0, var(--accent) 8px, var(--bg-2) 8px, var(--bg-2) 16px)`;
+  function toggle(i: number) {
+    const next = new Set(openRows);
+    if (next.has(i)) next.delete(i); else next.add(i);
+    openRows = next;
   }
 </script>
-
-<svelte:window onkeydown={activeProject ? handleKeydown : undefined} />
 
 <section class="gallery-section wrap" id="work" data-screen-label="02 Gallery">
   <div class="gallery-head">
@@ -70,116 +18,76 @@
     </div>
     <div class="gallery-count">
       <div>{PROJECTS.length} projects · 2014 — 2023</div>
-      <div class="accent-text">click any to expand</div>
+      <div class="accent-text">click to expand</div>
     </div>
   </div>
 
-  <div class="gallery-grid">
+  <div class="project-list">
     {#each PROJECTS as project, i}
-      <button
-        class="gallery-card"
-        style:grid-column="span {SPANS[i % SPANS.length]}"
-        style:transform={cardTransform(i)}
-        onmouseenter={() => { hoveredCard = i; }}
-        onmouseleave={() => { hoveredCard = null; }}
-        onclick={() => openModal(project)}
-        aria-label="View {project.title} case study"
-      >
-        <div
-          class="card-thumb"
-          class:card-thumb--hovered={hoveredCard === i}
-          style:aspect-ratio={RATIOS[i % RATIOS.length]}
-          style:background={project.thumbnail ? undefined : stripesBg(project, i)}
+      {@const open = openRows.has(i)}
+      <div class="accordion-item">
+
+        <button
+          class="project-row"
+          class:project-row--open={open}
+          onclick={() => toggle(i)}
+          aria-expanded={open}
+          aria-label="{open ? 'Collapse' : 'Expand'} {project.title}"
         >
-          {#if project.thumbnail}
-            <img class="card-img" src={project.thumbnail} alt={project.title} />
-            <div class="card-tint"></div>
-          {/if}
-          <span class="card-index">{String(i + 1).padStart(2, '0')} / {String(PROJECTS.length).padStart(2, '0')}</span>
-          <div class="card-bottom-row">
-            <span class="card-pill">{project.tags[0]}</span>
+          <span class="row-num">{String(i + 1).padStart(2, '0')}</span>
+          <span class="row-title">{project.title}</span>
+          <div class="row-tags">
+            {#each project.tags as tag}<span class="row-tag">{tag}</span>{/each}
+            <span class="row-year">{project.year}</span>
+          </div>
+          <span class="row-toggle">{open ? '−' : '+'}</span>
+        </button>
+
+        <div class="accordion-panel" class:accordion-panel--open={open}>
+          <div class="accordion-inner">
+
+            <div class="accordion-body">
+              <div class="acc-image">
+                {#if project.thumbnail}
+                  <img class="acc-img" src={project.thumbnail} alt={project.title} />
+                {/if}
+              </div>
+              <div class="acc-text">
+                <div class="acc-role">{project.role}</div>
+                <div class="acc-label">The problem</div>
+                <p class="acc-p">{project.problem}</p>
+                <div class="acc-label">What I did</div>
+                <p class="acc-p acc-p--dim">{project.solution}</p>
+                <div class="acc-label">Tech & tools</div>
+                <div class="acc-stack">
+                  {#each project.stack as tool}
+                    <span class="acc-tag">{tool}</span>
+                  {/each}
+                </div>
+              </div>
+            </div>
+
+            {#if project.images.length > 0}
+              <div class="acc-shots-wrap">
+                <div class="acc-label">Process · {project.images.length} shots</div>
+                <div class="acc-shots">
+                  {#each project.images as src, si}
+                    <div class="acc-shot">
+                      <img class="acc-shot-img" {src} alt="Process shot {si + 1}" />
+                    </div>
+                  {/each}
+                </div>
+              </div>
+            {/if}
+
           </div>
         </div>
-        <div class="card-meta">
-          <div>
-            <div class="card-title">{project.title}</div>
-            <div class="card-role">{project.role}</div>
-          </div>
-          <div class="card-year">{project.year}</div>
-        </div>
-      </button>
+
+      </div>
     {/each}
   </div>
+
 </section>
-
-{#if activeProject}
-  <!-- svelte-ignore a11y_click_events_have_key_events -->
-  <div
-    class="modal-backdrop"
-    onclick={handleBackdropClick}
-    role="dialog"
-    aria-modal="true"
-    aria-label="{activeProject.title} case study"
-  >
-    <div class="modal-shell">
-      <button class="modal-close" onclick={closeModal} aria-label="Close">×</button>
-
-      <div
-        class="modal-hero-shot"
-        style:background={activeProject.thumbnail ? undefined : (activeProject.color === 'mint'
-          ? 'repeating-linear-gradient(120deg, var(--accent) 0, var(--accent) 14px, var(--bg-2) 14px, var(--bg-2) 28px)'
-          : 'repeating-linear-gradient(60deg, var(--accent) 0, var(--accent) 10px, var(--bg-2) 10px, var(--bg-2) 20px)')}
-      >
-        {#if activeProject.thumbnail}
-          <img class="modal-hero-img" src={activeProject.thumbnail} alt={activeProject.title} />
-        {:else}
-          <span class="modal-hero-initials">
-            {activeProject.title.split(' ').map(w => w[0]).join('')}
-          </span>
-        {/if}
-      </div>
-
-      <div class="modal-body">
-        <div class="modal-left">
-          <div class="modal-meta-row">
-            <span class="modal-pill">{activeProject.year}</span>
-            {#each activeProject.tags as tag}
-              <span class="modal-pill">{tag}</span>
-            {/each}
-          </div>
-          <h3 class="modal-title">{activeProject.title}</h3>
-          <div class="modal-role">{activeProject.role}</div>
-
-          <div class="modal-section-label">The problem</div>
-          <p class="modal-text">{activeProject.problem}</p>
-
-          <div class="modal-section-label">What I did</div>
-          <p class="modal-text modal-text--dim">{activeProject.solution}</p>
-
-          <div class="modal-section-label">Tech & tools</div>
-          <div class="stack-list">
-            {#each activeProject.stack as tool}
-              <span class="stack-tag">{tool}</span>
-            {/each}
-          </div>
-        </div>
-
-        <div class="modal-right">
-          {#if activeProject.images.length > 0}
-            <div class="modal-section-label">Process · {activeProject.images.length} shots</div>
-            <div class="shots-grid">
-              {#each activeProject.images as src, si}
-                <div class="shot">
-                  <img class="shot-img" {src} alt="Process shot {si + 1}" />
-                </div>
-              {/each}
-            </div>
-          {/if}
-        </div>
-      </div>
-    </div>
-  </div>
-{/if}
 
 <style>
   /* ── section ── */
@@ -223,323 +131,217 @@
 
   .accent-text { color: var(--accent); }
 
-  /* ── grid ── */
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 20px;
-    row-gap: 48px;
-    align-items: start;
+  /* ── project list ── */
+  .project-list {
+    display: flex;
+    flex-direction: column;
+    border-top: 0.5px solid var(--line);
+    width: 100%;
   }
 
-  /* ── card ── */
-  .gallery-card {
-    position: relative;
-    background: transparent;
+  .accordion-item {
+    width: 100%;
+  }
+
+  .project-row {
+    display: grid;
+    grid-template-columns: 56px 1fr auto auto;
+    align-items: center;
+    width: 100%;
+    gap: 24px;
+    padding: 28px 0;
     border: none;
-    padding: 0;
+    background: transparent;
     text-align: left;
     cursor: pointer;
-    transition: transform 0.5s cubic-bezier(.7, 0, .2, 1);
+    border-bottom: 0.5px solid var(--line);
+    padding-left: 4px;
+    border-left: 2px solid transparent;
+    transition: border-color 0.2s, background 0.2s;
   }
 
-  .card-thumb {
-    position: relative;
-    width: 100%;
-    border-radius: 3px;
-    overflow: hidden;
-    isolation: isolate;
-    transition: transform 0.4s cubic-bezier(.7, 0, .2, 1),
-                box-shadow 0.4s cubic-bezier(.7, 0, .2, 1);
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+  .project-row:hover {
+    border-left-color: var(--accent);
+    background: color-mix(in oklab, var(--bg-2) 40%, transparent);
   }
 
-  .card-img {
-    position: absolute;
-    inset: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-    filter: sepia(100%) hue-rotate(0deg) brightness(0.75) saturate(0%);
-    z-index: 0;
-  }
-
-  .card-thumb--hovered {
-    transform: scale(1.015);
-    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.6);
-  }
-
-  .card-index {
-    position: absolute;
-    top: 14px; left: 14px;
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.12em;
+  .project-row:hover .row-title {
     color: var(--fg);
-    background: rgba(0, 0, 0, 0.35);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    padding: 4px 10px;
-    border-radius: 100px;
-    z-index: 2;
-    white-space: nowrap;
   }
 
-  .card-tint {
-    position: absolute;
-    inset: 0;
-    background: var(--accent);
-    mix-blend-mode: multiply;
-    opacity: 1;
-    pointer-events: none;
-    z-index: 1;
+  .row-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg-dim);
+    letter-spacing: 0.12em;
+    padding-left: 16px;
   }
 
-  .card-bottom-row {
-    position: absolute;
-    bottom: 14px; left: 14px; right: 14px;
+  .row-title {
+    font-family: var(--serif);
+    font-size: clamp(22px, 3vw, 36px);
+    font-weight: 400;
+    color: var(--fg-dim);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    transition: color 0.2s;
+  }
+
+  .row-tags {
     display: flex;
-    justify-content: flex-start;
-    z-index: 2;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
 
-  .card-pill {
+  .row-tag {
     font-family: var(--mono);
     font-size: 9px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--fg);
-    background: rgba(0, 0, 0, 0.35);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    padding: 4px 8px;
-    border-radius: 3px;
-  }
-
-  .card-meta {
-    margin-top: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 12px;
-  }
-
-  .card-title {
-    font-family: var(--serif);
-    font-size: 18px;
-    font-weight: 400;
-    line-height: 1.2;
-    color: var(--fg);
-    letter-spacing: -0.01em;
-  }
-
-  .card-role {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
     color: var(--fg-dim);
-    margin-top: 4px;
+    padding: 3px 8px;
+    border: 0.5px solid var(--line);
+    border-radius: 100px;
   }
 
-  .card-year {
+  .row-year {
     font-family: var(--mono);
     font-size: 11px;
     color: var(--fg-dim);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
+    opacity: 0.6;
   }
 
-  /* ── modal ── */
-  .modal-backdrop {
-    position: fixed; inset: 0; z-index: 200;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 32px;
-    overflow-y: auto;
-    animation: fade-in 0.3s ease;
+  /* ── accordion ── */
+  .row-toggle {
+    font-family: var(--mono);
+    font-size: 18px;
+    color: var(--fg-dim);
+    line-height: 1;
+    transition: color 0.2s;
+    padding-right: 4px;
+    flex-shrink: 0;
   }
 
-  .modal-shell {
+  .project-row--open .row-toggle { color: var(--accent); }
+  .project-row--open { border-left-color: var(--accent); }
+  .project-row--open .row-title { color: var(--fg); }
+
+  .accordion-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s cubic-bezier(.4, 0, .2, 1);
+  }
+
+  .accordion-panel--open {
+    grid-template-rows: 1fr;
+  }
+
+  .accordion-inner {
+    overflow: hidden;
+  }
+
+  .accordion-body {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    gap: 40px;
+    padding: 32px 0 32px 76px;
+    border-bottom: 0.5px solid var(--line);
+  }
+
+  .acc-image {
+    aspect-ratio: 4 / 3;
+    border-radius: 3px;
+    overflow: hidden;
     background: var(--bg-2);
     border: 0.5px solid var(--line);
-    border-radius: 6px;
-    width: 100%;
-    max-width: 1100px;
-    margin-top: 60px;
-    margin-bottom: 60px;
-    overflow: hidden;
-    position: relative;
   }
 
-  .modal-close {
-    position: absolute; top: 16px; right: 16px;
-    width: 36px; height: 36px;
-    border: 0.5px solid var(--line);
-    background: transparent;
-    color: var(--fg);
+  .acc-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .acc-role {
     font-family: var(--mono);
-    font-size: 14px;
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: border-color 0.2s, color 0.2s;
-  }
-
-  .modal-close:hover { border-color: var(--accent); color: var(--accent); }
-
-  .modal-hero-shot {
-    position: relative;
-    aspect-ratio: 21 / 9;
-    border-bottom: 0.5px solid var(--line);
-    overflow: hidden;
-  }
-
-  .modal-hero-initials {
-    position: absolute; inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--serif);
-    font-size: clamp(110px, 22vw, 260px);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--accent);
-    opacity: 0.9;
-    font-weight: 400;
-    letter-spacing: -0.03em;
-    mix-blend-mode: multiply;
-    pointer-events: none;
-    user-select: none;
+    margin-bottom: 24px;
   }
 
-
-  .modal-body {
-    padding: 64px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 48px;
-  }
-
-  .modal-meta-row {
-    display: flex;
-    gap: 8px;
+  .acc-label {
     font-family: var(--mono);
     font-size: 10px;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--fg-dim);
-    margin-bottom: 20px;
-    flex-wrap: wrap;
+    margin-bottom: 10px;
   }
 
-  .modal-pill {
+  .acc-p {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--fg);
+    margin: 0 0 24px;
+  }
+
+  .acc-p--dim { color: var(--fg-dim); }
+
+  .acc-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .acc-tag {
     padding: 4px 10px;
     border: 0.5px solid var(--line);
     border-radius: 100px;
-  }
-
-  .modal-title {
-    font-family: var(--serif); font-weight: 400;
-    font-size: clamp(36px, 5vw, 60px);
-    line-height: 1.05; letter-spacing: -0.02em;
-    margin: 0 0 16px;
-  }
-
-  .modal-role {
-    font-family: var(--mono); font-size: 11px;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--accent); margin-bottom: 28px;
-  }
-
-  .modal-section-label {
-    font-family: var(--mono); font-size: 10px;
-    letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--fg-dim); margin-bottom: 12px;
-  }
-
-  .modal-text {
-    font-size: 16px; line-height: 1.65; color: var(--fg);
-    margin: 0 0 28px;
-  }
-
-  .modal-text--dim { color: var(--fg-dim); }
-
-  .stack-list { display: flex; flex-wrap: wrap; gap: 8px; }
-
-  .stack-tag {
-    padding: 6px 12px;
-    border: 0.5px solid var(--line);
-    border-radius: 100px;
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 10px;
     color: var(--fg-dim);
   }
 
-  .shots-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+  .acc-shots-wrap {
+    padding: 28px 0 28px 76px;
+    border-bottom: 0.5px solid var(--line);
   }
 
-  .shot {
+  .acc-shots {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .acc-shot {
     aspect-ratio: 4 / 3;
     border-radius: 3px;
     border: 0.5px solid var(--line);
     overflow: hidden;
   }
 
-  .shot-img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  .modal-hero-img {
+  .acc-shot-img {
     width: 100%; height: 100%;
     object-fit: cover;
     display: block;
   }
 
   /* ── responsive ── */
-  @media (max-width: 1024px) {
-    .gallery-grid {
-      grid-template-columns: repeat(6, 1fr);
-    }
-    .gallery-card {
-      grid-column: span 3 !important;
-    }
+  @media (max-width: 900px) {
+    .accordion-body { grid-template-columns: 1fr; padding-left: 40px; }
+    .acc-shots-wrap { padding-left: 40px; }
+    .acc-shots { grid-template-columns: repeat(2, 1fr); }
   }
 
-  @media (max-width: 640px) {
-    .gallery-grid {
-      grid-template-columns: 1fr;
-      row-gap: 32px;
-    }
-    .gallery-card {
-      grid-column: span 1 !important;
-    }
-    .card-thumb { aspect-ratio: 4 / 5 !important; }
-    .modal-backdrop { padding: 0; }
-    .modal-shell { margin: 0; border-radius: 0; min-height: 100dvh; }
-    .modal-hero-shot { aspect-ratio: 1 / 1; }
-    .modal-body {
-      padding: 40px 24px;
-      grid-template-columns: 1fr;
-      gap: 32px;
-    }
-  }
-
-  @media (max-width: 980px) {
-    .modal-body {
-      padding: 48px 40px;
-      grid-template-columns: 1fr;
-      gap: 32px;
-    }
+  @media (max-width: 720px) {
+    .project-row { grid-template-columns: 40px 1fr auto; gap: 16px; }
+    .row-tags { display: none; }
+    .accordion-body { padding: 24px 20px; }
+    .acc-shots-wrap { padding: 20px; }
   }
 </style>

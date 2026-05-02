@@ -1,37 +1,6 @@
 <script lang="ts">
   import { SKILLS, PERSONALITY, type Skill } from '../data/skills.js';
 
-  type SortKey = 'skill' | 'category' | 'years';
-  type Dir = 'asc' | 'desc';
-  type Filter = 'All' | 'Design' | 'Code' | 'Tool';
-
-  let sortKey = $state<SortKey>('skill');
-  let dir = $state<Dir>('asc');
-  let filter = $state<Filter>('All');
-
-  let sorted = $derived.by(() => {
-    const list = filter === 'All' ? SKILLS : SKILLS.filter(s => s.category === filter);
-    return [...list].sort((a, b) => {
-      let av: string | number = a[sortKey];
-      let bv: string | number = b[sortKey];
-      if (typeof av === 'string') { av = av.toLowerCase(); bv = (bv as string).toLowerCase(); }
-      if (av < bv) return dir === 'asc' ? -1 : 1;
-      if (av > bv) return dir === 'asc' ? 1 : -1;
-      return 0;
-    });
-  });
-
-  function flip(k: SortKey) {
-    if (sortKey === k) {
-      dir = dir === 'asc' ? 'desc' : 'asc';
-    } else {
-      sortKey = k;
-      dir = 'asc';
-    }
-  }
-
-  const CATS: Filter[] = ['All', 'Design', 'Code', 'Tool'];
-
   const catColors: Record<string, { bg: string; fg: string }> = {
     Design: { bg: 'rgba(68,200,166,0.12)',    fg: '#146244' },
     Code:   { bg: 'rgba(166, 48, 85, 0.18)',   fg: '#A63055' },
@@ -103,58 +72,24 @@
     <div class="about-right">
       <div class="skills-label label">Skills · Tools · Stack</div>
 
-      <div class="filter-row" role="group" aria-label="Filter by category">
-        {#each CATS as cat}
-          <button
-            class="filter-btn"
-            class:filter-btn--active={filter === cat}
-            onclick={() => { filter = cat; }}
-            aria-pressed={filter === cat}
-          >
-            {cat}
-          </button>
-        {/each}
-      </div>
-
       <div class="table-wrap" role="table" aria-label="Skills table">
         <div class="thead" role="rowgroup">
           <div class="tr" role="row">
-            <button
-              class="th"
-              class:th--active={sortKey === 'skill'}
-              onclick={() => flip('skill')}
-              aria-sort={sortKey === 'skill' ? (dir === 'asc' ? 'ascending' : 'descending') : 'none'}
-            >
-              Skill {sortKey === 'skill' ? (dir === 'asc' ? '▲' : '▼') : ''}
-            </button>
-            <button
-              class="th"
-              class:th--active={sortKey === 'category'}
-              onclick={() => flip('category')}
-              aria-sort={sortKey === 'category' ? (dir === 'asc' ? 'ascending' : 'descending') : 'none'}
-            >
-              Category {sortKey === 'category' ? (dir === 'asc' ? '▲' : '▼') : ''}
-            </button>
-            <button
-              class="th"
-              class:th--active={sortKey === 'years'}
-              onclick={() => flip('years')}
-              aria-sort={sortKey === 'years' ? (dir === 'asc' ? 'ascending' : 'descending') : 'none'}
-            >
-              Years {sortKey === 'years' ? (dir === 'asc' ? '▲' : '▼') : ''}
-            </button>
-            <div class="th" role="columnheader" aria-label="Favourite">♡</div>
+            <div class="th" role="columnheader">Skill</div>
+            <div class="th" role="columnheader">Category</div>
           </div>
         </div>
 
         <div class="tbody" role="rowgroup">
-          {#each sorted as s (s.skill)}
+          {#each SKILLS as s (s.skill)}
             <div
               class="tr skill-row"
               class:skill-row--fav={s.fav}
               role="row"
             >
-              <div class="td td--name" role="cell">{s.skill}</div>
+              <div class="td td--name" role="cell">
+                {s.skill}{#if s.fav}<span class="fav-heart">♥</span>{/if}
+              </div>
               <div class="td" role="cell">
                 <span
                   class="cat-tag"
@@ -166,16 +101,12 @@
                   {s.category}
                 </span>
               </div>
-              <div class="td td--dim" role="cell">{s.years}y</div>
-              <div class="td td--fav" role="cell" aria-label={s.fav ? 'Favourite' : ''}>
-                {#if s.fav}♥{/if}
-              </div>
             </div>
           {/each}
         </div>
       </div>
 
-      <div class="table-foot">♥ = current obsession · click any header to sort</div>
+      <div class="table-foot">♥ = current obsession</div>
     </div>
   </div>
 </section>
@@ -290,33 +221,6 @@
   /* ── skills ── */
   .skills-label { margin-bottom: 16px; }
 
-  .filter-row {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 14px;
-    flex-wrap: wrap;
-  }
-
-  .filter-btn {
-    padding: 5px 12px;
-    border: 0.5px solid var(--line);
-    background: transparent;
-    color: var(--fg-dim);
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    border-radius: 100px;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-  }
-
-  .filter-btn--active {
-    background: var(--accent);
-    color: var(--bg);
-    border-color: var(--accent);
-  }
-
   .table-wrap {
     border-top: 0.5px solid var(--line);
     border-bottom: 0.5px solid var(--line);
@@ -326,7 +230,7 @@
 
   .tr {
     display: grid;
-    grid-template-columns: 2.4fr 1.2fr 0.7fr 0.4fr;
+    grid-template-columns: 2.4fr 1.2fr;
     padding: 12px 14px;
     gap: 10px;
     align-items: center;
@@ -338,18 +242,7 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--fg-dim);
-    background: transparent;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    transition: color 0.2s;
   }
-
-  .th--active { color: var(--accent); }
 
   .skill-row {
     font-family: var(--mono);
@@ -367,7 +260,12 @@
   .td--name { font-weight: 400; }
   .skill-row--fav .td--name { font-weight: 500; }
   .td--dim { color: var(--fg-dim); }
-  .td--fav { text-align: right; }
+
+  .fav-heart {
+    margin-left: 7px;
+    color: var(--accent);
+    font-size: 0.85em;
+  }
 
   .cat-tag {
     display: inline-flex;
@@ -407,7 +305,7 @@
 
   @media (max-width: 720px) {
     .tr {
-      grid-template-columns: 1.8fr 1fr 0.6fr 0.4fr;
+      grid-template-columns: 1.8fr 1fr;
       font-size: 11px;
     }
   }
