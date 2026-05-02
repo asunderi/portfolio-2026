@@ -33,9 +33,9 @@
   const CATS: Filter[] = ['All', 'Design', 'Code', 'Tool'];
 
   const catColors: Record<string, { bg: string; fg: string }> = {
-    Design: { bg: 'rgba(16, 42, 36, 0.12)',    fg: '#102A24' },
+    Design: { bg: 'rgba(68,200,166,0.12)',    fg: '#146244' },
     Code:   { bg: 'rgba(166, 48, 85, 0.18)',   fg: '#A63055' },
-    Tool:   { bg: 'rgba(245, 233, 220, 0.10)', fg: 'var(--fg-dim)' },
+    Tool:   { bg: 'rgba(232,201,138,0.18)', fg: 'var(--fg-dim)' },
   };
 
   function handleResume(e: MouseEvent) {
@@ -58,20 +58,18 @@
     <div class="about-left">
       <p class="bio">
         I'm a <em class="bio-em">multidisciplinary designer</em> who started in print,
-        fell into digital, and never crawled out. Ten years of design systems, brand
-        work, mobile apps, illustration, and the occasional rogue email template that
-        everyone fights over.
+        fell into digital, and never crawled out. Over ten years of design systems, brand
+        work, mobile apps, illustration, and the occasional comment that spirals conversations.
       </p>
       <p class="bio">
         I work analytically — typography is math, color is physics, hierarchy is a
         load-bearing wall. Underneath that, I am
-        <em class="bio-em" title="this is a hint">slightly feral</em>
-        and would like the work to feel that way too. Quiet jokes in alt text. Hover
-        states that earn a smile. Rules followed precisely until they shouldn't be.
+        <em class="bio-em" title="this is a hint">slightly unhinged</em>
+        and would like the work to feel that way too with continuous commentary and unnecessary hover states.
       </p>
       <p class="bio">
-        Based in Portage, Michigan with two cats, an unreasonable backlog of
-        open-world games, and a standing taro boba order.
+        Based in Portage, Michigan with not enough cats, an unreasonable backlog of
+         games, and a standing brown sugar boba order.
       </p>
 
       <div class="contact-block">
@@ -85,6 +83,10 @@
             {PERSONALITY.email}
           </a>
         </div>
+          <div class="contact-row">
+              <span class="contact-key">Listening</span>
+              <span class="contact-val" title="ask me about it">{PERSONALITY.currentlyListening}</span>
+          </div>
         <div class="contact-row contact-row--last">
           <span class="contact-key">Currently</span>
           <span class="contact-val" title="ask me about it">{PERSONALITY.currentlyPlaying}</span>

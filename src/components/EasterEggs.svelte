@@ -86,17 +86,13 @@
       if ((window as any).__eggRan) return;
       (window as any).__eggRan = true;
       const msgs: [string, string][] = [
-        ['%c hello.', 'font-size:24px; font-family:serif; font-style:italic; color:#9fd9c8;'],
-        ['%cyou opened the console. that is a personality trait.', 'color:#c9b8a8; font-style:italic;'],
+        ['%c hey', 'font-size:24px; font-family:serif; font-style:italic; color:#9fd9c8;'],
         ['%cthings i would like you to know:', 'color:#9fd9c8; font-weight:bold;'],
-        ['%c  · my favorite movie is Annihilation. the bear scene. you know.', 'color:#c9b8a8;'],
-        ['%c  · taro boba, no ice, 50% sweet. always.', 'color:#c9b8a8;'],
-        ['%c  · i have logged 312 hours in BG3 and i am not done.', 'color:#c9b8a8;'],
-        ['%c  · my cats are the lead designers, i just hold the mouse.', 'color:#c9b8a8;'],
+        ['%c  · i have logged 650 hours in BG3.', 'color:#c9b8a8;'],
+        ['%c  · ginger is the lead designer, i just hold the mouse.', 'color:#c9b8a8;'],
         ['%c  · scavengers reign deserved more seasons.', 'color:#c9b8a8;'],
+        ['%c  · i keep messing up my mewgenics runs.', 'color:#c9b8a8;'],
         ['%c—', 'color:#3d1520;'],
-        ['%ctry typing "boba" anywhere on the page.', 'color:#9fd9c8; font-style:italic;'],
-        ['%cor press the up arrow four times.', 'color:#9fd9c8; font-style:italic;'],
       ];
       msgs.forEach(([msg, style], i) => setTimeout(() => console.log(msg, style), i * 180));
     }

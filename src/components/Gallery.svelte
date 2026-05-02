@@ -89,7 +89,7 @@
           class="card-thumb"
           class:card-thumb--hovered={hoveredCard === i}
           style:aspect-ratio={RATIOS[i % RATIOS.length]}
-          style:background={stripesBg(project, i)}
+          style:background={project.thumbnail ? undefined : stripesBg(project, i)}
         >
           {#if project.thumbnail}
             <img class="card-img" src={project.thumbnail} alt={project.title} />
@@ -261,7 +261,7 @@
     width: 100%; height: 100%;
     object-fit: cover;
     display: block;
-    filter: sepia(0%) hue-rotate(0deg) brightness(0.5) saturate(0%);
+    filter: sepia(100%) hue-rotate(0deg) brightness(0.75) saturate(0%);
     z-index: 0;
   }
 
@@ -433,14 +433,6 @@
     user-select: none;
   }
 
-  .modal-hero-label {
-    position: absolute; bottom: 14px; right: 14px;
-    font-family: var(--mono); font-size: 10px;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--fg-dim);
-    background: rgba(0, 0, 0, 0.4);
-    padding: 4px 10px; border-radius: 3px;
-  }
 
   .modal-body {
     padding: 64px;
