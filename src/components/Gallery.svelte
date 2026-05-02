@@ -55,8 +55,8 @@
 
   function stripesBg(project: Project, index: number): string {
     return project.color === 'mint'
-      ? `repeating-linear-gradient(${90 + index * 7}deg, var(--surface) 0, var(--surface) 12px, var(--bg-2) 12px, var(--bg-2) 24px)`
-      : `repeating-linear-gradient(${45 + index * 11}deg, var(--surface) 0, var(--surface) 8px, var(--bg-2) 8px, var(--bg-2) 16px)`;
+      ? `repeating-linear-gradient(${90 + index * 7}deg, var(--accent) 0, var(--accent) 12px, var(--bg-2) 12px, var(--bg-2) 24px)`
+      : `repeating-linear-gradient(${45 + index * 11}deg, var(--accent) 0, var(--accent) 8px, var(--bg-2) 8px, var(--bg-2) 16px)`;
   }
 </script>
 
@@ -66,7 +66,7 @@
   <div class="gallery-head">
     <div>
       <div class="label" style="margin-bottom: 14px;">§ 02 — Selected Work</div>
-      <h2 class="section-title">Things I made,<br />mostly on purpose.</h2>
+      <h2 class="section-title">Things I made,<br />mostly on <span class="accent-word">purpose.</span></h2>
     </div>
     <div class="gallery-count">
       <div>{PROJECTS.length} projects · 2014 — 2023</div>
@@ -93,12 +93,9 @@
         >
           {#if project.thumbnail}
             <img class="card-img" src={project.thumbnail} alt={project.title} />
-            <div class="card-tint" style:background={project.color === 'mint' ? 'var(--surface)' : 'var(--accent)'}></div>
+            <div class="card-tint"></div>
           {/if}
           <span class="card-index">{String(i + 1).padStart(2, '0')} / {String(PROJECTS.length).padStart(2, '0')}</span>
-          <span class="card-initials" style:color={project.color === 'mint' ? 'var(--accent)' : 'var(--accent-2)'}>
-            {project.title.split(' ').map(w => w[0]).join('')}
-          </span>
           <div class="card-bottom-row">
             <span class="card-pill">{project.tags[0]}</span>
           </div>
@@ -130,8 +127,8 @@
       <div
         class="modal-hero-shot"
         style:background={activeProject.thumbnail ? undefined : (activeProject.color === 'mint'
-          ? 'repeating-linear-gradient(120deg, var(--surface) 0, var(--surface) 14px, var(--bg-2) 14px, var(--bg-2) 28px)'
-          : 'repeating-linear-gradient(60deg, var(--surface) 0, var(--surface) 10px, var(--bg-2) 10px, var(--bg-2) 20px)')}
+          ? 'repeating-linear-gradient(120deg, var(--accent) 0, var(--accent) 14px, var(--bg-2) 14px, var(--bg-2) 28px)'
+          : 'repeating-linear-gradient(60deg, var(--accent) 0, var(--accent) 10px, var(--bg-2) 10px, var(--bg-2) 20px)')}
       >
         {#if activeProject.thumbnail}
           <img class="modal-hero-img" src={activeProject.thumbnail} alt={activeProject.title} />
@@ -209,6 +206,8 @@
     letter-spacing: -0.02em;
   }
 
+  .accent-word { color: var(--accent); }
+
   .gallery-count {
     font-family: var(--mono);
     font-size: 11px;
@@ -265,14 +264,6 @@
     z-index: 0;
   }
 
-  .card-tint {
-    position: absolute;
-    inset: 0;
-    mix-blend-mode: multiply;
-    z-index: 1;
-    pointer-events: none;
-  }
-
   .card-thumb--hovered {
     transform: scale(1.015);
     box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.6);
@@ -294,20 +285,14 @@
     white-space: nowrap;
   }
 
-  .card-initials {
+  .card-tint {
     position: absolute;
     inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--serif);
-    font-size: clamp(60px, 14vw, 160px);
-    font-weight: 400;
-    letter-spacing: -0.03em;
-    opacity: 0.12;
+    background: var(--accent);
     mix-blend-mode: multiply;
+    opacity: 1;
     pointer-events: none;
-    user-select: none;
+    z-index: 1;
   }
 
   .card-bottom-row {
