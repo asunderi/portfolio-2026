@@ -4,16 +4,14 @@
   let openRows = $state<Set<number>>(new Set());
 
   function toggle(i: number) {
-    const next = new Set(openRows);
-    if (next.has(i)) next.delete(i); else next.add(i);
-    openRows = next;
+    openRows = openRows.has(i) ? new Set() : new Set([i]);
   }
 </script>
 
 <section class="gallery-section wrap" id="work" data-screen-label="02 Gallery">
   <div class="gallery-head">
     <div>
-      <div class="label" style="margin-bottom: 14px;">♥ 02 — Selected Work</div>
+      <div class="label" style="margin-bottom: 14px;">02 — Selected Work</div>
       <h2 class="section-title">The things<br />I <span class="accent-word">made</span>.</h2>
     </div>
     <div class="gallery-count">

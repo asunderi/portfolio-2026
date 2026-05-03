@@ -10,7 +10,7 @@
 
 <section class="about-section wrap" id="about" data-screen-label="03 About">
   <div class="about-head">
-    <div class="label">♥ 03 — About + Tools</div>
+    <div class="label">03 — About + Tools</div>
     <h2 class="about-title">
         The things <br /> I <span class="accent-word">do</span> and <span class="accent-word">use</span>.
     </h2>
@@ -37,19 +37,11 @@
           <span class="contact-key">Based</span>
           <span class="contact-val">{PERSONALITY.city}</span>
         </div>
-        <div class="contact-row">
+        <div class="contact-row contact-row--last">
           <span class="contact-key">Email</span>
           <a href="mailto:{PERSONALITY.email}" class="contact-link">
             {PERSONALITY.email}
           </a>
-        </div>
-          <div class="contact-row">
-              <span class="contact-key">Listening</span>
-              <span class="contact-val" title="ask me about it">{PERSONALITY.currentlyListening}</span>
-          </div>
-        <div class="contact-row contact-row--last">
-          <span class="contact-key">Playing</span>
-          <span class="contact-val" title="ask me about it">{PERSONALITY.currentlyPlaying}</span>
         </div>
 
         <button class="resume-btn" onclick={handleResume}>

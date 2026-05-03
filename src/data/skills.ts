@@ -9,16 +9,8 @@ export interface Skill {
 export interface Personality {
   city: string;
   email: string;
-  currentlyPlaying: string;
-  currentlyListening: string;
-  currentlyWatching: string;
-  currentlyDrinking: string;
-  cats: number;
   yearsInIndustry: number;
   projectsShipped: number;
-  toDoList: string;
-  bobasConsumed: number;
-  hoursInBG3: number;
 }
 
 export const SKILLS: Skill[] = [
@@ -43,14 +35,6 @@ export const SKILLS: Skill[] = [
 export const PERSONALITY: Personality = {
   city: 'Portage, Michigan',
   email: 'anastacia.lt.frost@gmail.com',
-  currentlyPlaying: 'Minecraft',
-  currentlyWatching: 'Hannibal (rewatch, season 2)',
-  currentlyDrinking: 'brown sugar boba tea',
-  currentlyListening: 'Joji - Strange Home',
-  cats: 2,
   yearsInIndustry: 10,
   projectsShipped: 147,
-  toDoList: '52',
-  bobasConsumed: 1284,
-  hoursInBG3: 650,
 };

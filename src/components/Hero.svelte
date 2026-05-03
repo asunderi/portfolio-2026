@@ -30,19 +30,10 @@
         { key: 'Currently active',      val: '1',   sub: 'northstar care community' },
       ],
     },
-    {
-      interval: 5000,
-      slides: [
-        { key: "List of To Do's", val: '52',    sub: 'when will it be 0' },
-        { key: 'Hours in BG3',    val: '650',   sub: 'the honour run was a mistake' },
-        { key: 'Bobas consumed',  val: '1,284', sub: 'brown sugar, always' },
-        { key: 'Cats',            val: '2',     sub: 'they know what they did' },
-      ],
-    },
   ];
 
-  let indices = $state([0, 0, 0]);
-  let paused  = $state([false, false, false]);
+  let indices = $state([0, 0]);
+  let paused  = $state([false, false]);
 
   onMount(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -64,9 +55,6 @@
         <span class="blink-square" aria-hidden="true"></span>
         <span>Portage, Michigan</span>
       </div>
-    </div>
-    <div class="hero-meta hero-meta--right">
-      <span class="version-tag">v.36.3.1 — current</span>
     </div>
   </div>
 
@@ -154,7 +142,6 @@
     width: 7px; height: 7px;
     background: var(--accent);
     border-radius: 1px;
-    animation: pulse 1.6s ease-in-out infinite;
   }
 
   .version-tag {
@@ -214,7 +201,7 @@
     border-top: 0.5px solid var(--line);
     border-bottom: 0.5px solid var(--line);
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     font-family: var(--mono);
   }
 
@@ -270,9 +257,8 @@
     .hero-section { padding-top: 120px; padding-bottom: 80px; }
     .hero-top-row { margin-bottom: 48px; }
     .hero-name-block { margin-bottom: 60px; }
-    .hero-ledger { grid-template-columns: repeat(2, 1fr); }
-    .stat:nth-child(2) { border-right: none; }
-    .stat:nth-child(1),
-    .stat:nth-child(2) { border-bottom: 0.5px solid var(--line); }
+    .hero-ledger { grid-template-columns: 1fr; }
+    .stat { border-right: none; border-bottom: 0.5px solid var(--line); }
+    .stat--last { border-bottom: none; }
   }
 </style>

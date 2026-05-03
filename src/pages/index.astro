@@ -22,10 +22,7 @@ import { PERSONALITY } from '../data/skills.ts';
           <div class="foot-name">Anastacia Frost</div>
           <div>© {new Date().getFullYear()} — designed, built, and over-thought in Portage.</div>
         </div>
-        <div class="foot-center">
-          <div>&#123; made with claude and caffeine &#125;</div>
-        </div>
-        <div class="foot-right">
+<div class="foot-right">
           <div>
             <span class="foot-dot" title="this dot does nothing. it just blinks." aria-hidden="true"></span>
             last touched {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -52,12 +49,7 @@ import { PERSONALITY } from '../data/skills.ts';
     margin-bottom: 6px;
   }
 
-  .foot-center {
-    text-align: center;
-    color: var(--fg-dim);
-  }
-
-  .foot-right {
+.foot-right {
     text-align: right;
     display: flex;
     flex-direction: column;
@@ -71,7 +63,6 @@ import { PERSONALITY } from '../data/skills.ts';
     background: var(--accent);
     margin-right: 8px;
     vertical-align: middle;
-    animation: pulse 2s ease-in-out infinite;
   }
 
   .foot-email a {

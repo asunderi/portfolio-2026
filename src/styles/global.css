@@ -137,7 +137,6 @@ body::before {
 .nav-mark .dot {
   width: 8px; height: 8px; border-radius: 50%;
   background: var(--accent);
-  animation: pulse 2.4s ease-in-out infinite;
 }
 .nav-links {
   display: flex; gap: 24px; align-items: center;
