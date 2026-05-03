@@ -1,12 +1,6 @@
 <script lang="ts">
   import { SKILLS, PERSONALITY, type Skill } from '../data/skills.js';
 
-  const catColors: Record<string, { bg: string; fg: string }> = {
-    Design: { bg: 'rgba(68,200,166,0.12)',    fg: '#146244' },
-    Code:   { bg: 'rgba(166, 48, 85, 0.18)',   fg: '#A63055' },
-    Tool:   { bg: 'rgba(232,201,138,0.18)', fg: 'var(--fg-dim)' },
-  };
-
   function handleResume(e: MouseEvent) {
     e.preventDefault();
     console.log('%c[ resume ] download stub — wire to /resume.pdf', 'color:#9fd9c8');
@@ -16,9 +10,9 @@
 
 <section class="about-section wrap" id="about" data-screen-label="03 About">
   <div class="about-head">
-    <div class="label">§ 03 — About + Stack</div>
+    <div class="label">♥ 03 — About + Tools</div>
     <h2 class="about-title">
-      The relevant<br />and the <span class="accent-word">true.</span>
+        The things <br /> I <span class="accent-word">do</span> and <span class="accent-word">use</span>.
     </h2>
   </div>
 
@@ -27,18 +21,15 @@
     <div class="about-left">
       <p class="bio">
         I'm a <em class="bio-em">multidisciplinary designer</em> who started in print,
-        fell into digital, and never crawled out. Over ten years of design systems, brand
-        work, mobile apps, illustration, and the occasional comment that spirals conversations.
+        fell into digital, and never looked back. Over ten years of design systems, brand
+        work, mobile apps, illustration, iterations, and prototyping.
       </p>
       <p class="bio">
-        I work analytically — typography is math, color is physics, hierarchy is a
-        load-bearing wall. Underneath that, I am
-        <em class="bio-em" title="this is a hint">slightly unhinged</em>
-        and would like the work to feel that way too with continuous commentary and unnecessary hover states.
+        Starting in print gave me a foundation most digital designers skip — systems thinking before there was a component library to reach for. That background shows up in how I work: consistent across media, built to scale, just as comfortable in InDesign as in a codebase.
       </p>
       <p class="bio">
         Based in Portage, Michigan with not enough cats, an unreasonable backlog of
-         games, and a standing brown sugar boba order.
+         video games, and a desire for boba tea to be pumped into my veins.
       </p>
 
       <div class="contact-block">
@@ -57,7 +48,7 @@
               <span class="contact-val" title="ask me about it">{PERSONALITY.currentlyListening}</span>
           </div>
         <div class="contact-row contact-row--last">
-          <span class="contact-key">Currently</span>
+          <span class="contact-key">Playing</span>
           <span class="contact-val" title="ask me about it">{PERSONALITY.currentlyPlaying}</span>
         </div>
 
@@ -70,7 +61,7 @@
 
     <!-- Right: skills table -->
     <div class="about-right">
-      <div class="skills-label label">Skills · Tools · Stack</div>
+      <div class="skills-label label">Skills · Tools</div>
 
       <div class="table-wrap" role="table" aria-label="Skills table">
         <div class="thead" role="rowgroup">
@@ -91,13 +82,8 @@
                 {s.skill}{#if s.fav}<span class="fav-heart">♥</span>{/if}
               </div>
               <div class="td" role="cell">
-                <span
-                  class="cat-tag"
-                  style:background={catColors[s.category]?.bg}
-                  style:color={catColors[s.category]?.fg}
-                  style:border-color={catColors[s.category]?.fg === 'var(--fg-dim)' ? 'var(--line)' : catColors[s.category]?.fg}
-                >
-                  <span class="cat-dot" style:background={catColors[s.category]?.fg}></span>
+                <span class="cat-tag cat-{s.category.toLowerCase()}">
+                  <span class="cat-dot"></span>
                   {s.category}
                 </span>
               </div>
@@ -256,10 +242,8 @@
   .skill-row:hover { background: var(--bg-2); }
   .skill-row--fav { color: var(--accent); }
 
-  .td { }
   .td--name { font-weight: 400; }
   .skill-row--fav .td--name { font-weight: 500; }
-  .td--dim { color: var(--fg-dim); }
 
   .fav-heart {
     margin-left: 7px;
@@ -286,6 +270,15 @@
     display: inline-block;
     flex-shrink: 0;
   }
+
+  .cat-design { background: var(--cat-design-bg); color: var(--cat-design-fg); }
+  .cat-design .cat-dot { background: var(--cat-design-fg); }
+
+  .cat-code { background: var(--cat-code-bg); color: var(--cat-code-fg); }
+  .cat-code .cat-dot { background: var(--cat-code-fg); }
+
+  .cat-tool { background: var(--cat-tool-bg); color: var(--fg-dim); border-color: var(--line); }
+  .cat-tool .cat-dot { background: var(--fg-dim); }
 
   .table-foot {
     margin-top: 10px;

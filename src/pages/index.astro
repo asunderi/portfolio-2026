@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.svelte';
-import Hero from '../components/Hero.astro';
+import Hero from '../components/Hero.svelte';
 import Gallery from '../components/Gallery.svelte';
 import About from '../components/About.svelte';
 import { PERSONALITY } from '../data/skills.ts';
@@ -10,7 +10,7 @@ import { PERSONALITY } from '../data/skills.ts';
 <Layout>
   <Nav client:load />
   <main>
-    <Hero />
+    <Hero client:load />
     <Gallery client:load />
     <About client:load />
   </main>

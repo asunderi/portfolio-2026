@@ -13,11 +13,11 @@
 <section class="gallery-section wrap" id="work" data-screen-label="02 Gallery">
   <div class="gallery-head">
     <div>
-      <div class="label" style="margin-bottom: 14px;">§ 02 — Selected Work</div>
-      <h2 class="section-title">Things I made,<br />mostly on <span class="accent-word">purpose.</span></h2>
+      <div class="label" style="margin-bottom: 14px;">♥ 02 — Selected Work</div>
+      <h2 class="section-title">The things<br />I <span class="accent-word">made</span>.</h2>
     </div>
     <div class="gallery-count">
-      <div>{PROJECTS.length} projects · 2014 — 2023</div>
+      <div>{PROJECTS.length} projects · 2014 — 2026</div>
       <div class="accent-text">click to expand</div>
     </div>
   </div>
@@ -34,13 +34,11 @@
           aria-expanded={open}
           aria-label="{open ? 'Collapse' : 'Expand'} {project.title}"
         >
-          <span class="row-num">{String(i + 1).padStart(2, '0')}</span>
           <span class="row-title">{project.title}</span>
           <div class="row-tags">
             {#each project.tags as tag}<span class="row-tag">{tag}</span>{/each}
             <span class="row-year">{project.year}</span>
           </div>
-          <span class="row-toggle">{open ? '−' : '+'}</span>
         </button>
 
         <div class="accordion-panel" class:accordion-panel--open={open}>
@@ -145,7 +143,7 @@
 
   .project-row {
     display: grid;
-    grid-template-columns: 56px 1fr auto auto;
+    grid-template-columns: 1fr auto;
     align-items: center;
     width: 100%;
     gap: 24px;
@@ -169,14 +167,6 @@
     color: var(--fg);
   }
 
-  .row-num {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--fg-dim);
-    letter-spacing: 0.12em;
-    padding-left: 16px;
-  }
-
   .row-title {
     font-family: var(--serif);
     font-size: clamp(22px, 3vw, 36px);
@@ -185,6 +175,7 @@
     line-height: 1.1;
     letter-spacing: -0.01em;
     transition: color 0.2s;
+    padding-left: 16px;
   }
 
   .row-tags {
@@ -214,17 +205,6 @@
   }
 
   /* ── accordion ── */
-  .row-toggle {
-    font-family: var(--mono);
-    font-size: 18px;
-    color: var(--fg-dim);
-    line-height: 1;
-    transition: color 0.2s;
-    padding-right: 4px;
-    flex-shrink: 0;
-  }
-
-  .project-row--open .row-toggle { color: var(--accent); }
   .project-row--open { border-left-color: var(--accent); }
   .project-row--open .row-title { color: var(--fg); }
 
@@ -246,7 +226,7 @@
     display: grid;
     grid-template-columns: 2fr 3fr;
     gap: 40px;
-    padding: 32px 0 32px 76px;
+    padding: 32px 0 32px 20px;
     border-bottom: 0.5px solid var(--line);
   }
 
@@ -307,7 +287,7 @@
   }
 
   .acc-shots-wrap {
-    padding: 28px 0 28px 76px;
+    padding: 28px 0 28px 20px;
     border-bottom: 0.5px solid var(--line);
   }
 
@@ -339,7 +319,7 @@
   }
 
   @media (max-width: 720px) {
-    .project-row { grid-template-columns: 40px 1fr auto; gap: 16px; }
+    .project-row { grid-template-columns: 1fr auto; gap: 16px; }
     .row-tags { display: none; }
     .accordion-body { padding: 24px 20px; }
     .acc-shots-wrap { padding: 20px; }

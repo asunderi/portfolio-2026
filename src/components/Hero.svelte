@@ -1,6 +1,61 @@
----
-import { PERSONALITY } from '../data/skills.js';
----
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import { fly } from 'svelte/transition';
+
+  interface StatSlide {
+    key: string;
+    val: string;
+    sub: string;
+  }
+
+  interface StatConfig {
+    slides: StatSlide[];
+    interval: number;
+  }
+
+  const STATS: StatConfig[] = [
+    {
+      interval: 7000,
+      slides: [
+        { key: 'Years in industry', val: '10',  sub: 'and counting' },
+        { key: 'Skills in toolkit', val: '16',  sub: 'design · code · tools' },
+        { key: 'Favourite tools',   val: '4',   sub: 'indesign · figma · ui/ux · jetbrains' },
+      ],
+    },
+    {
+      interval: 9000,
+      slides: [
+        { key: 'Projects shipped',      val: '147', sub: 'across 6 industries' },
+        { key: 'Featured in portfolio', val: '9',   sub: 'hand-picked' },
+        { key: 'Currently active',      val: '1',   sub: 'northstar care community' },
+      ],
+    },
+    {
+      interval: 5000,
+      slides: [
+        { key: "List of To Do's", val: '52',    sub: 'when will it be 0' },
+        { key: 'Hours in BG3',    val: '650',   sub: 'the honour run was a mistake' },
+        { key: 'Bobas consumed',  val: '1,284', sub: 'brown sugar, always' },
+        { key: 'Cats',            val: '2',     sub: 'they know what they did' },
+      ],
+    },
+  ];
+
+  let indices = $state([0, 0, 0]);
+  let paused  = $state([false, false, false]);
+
+  onMount(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const timers = STATS.map((cfg, i) =>
+      setInterval(() => {
+        if (!paused[i]) indices[i] = (indices[i] + 1) % cfg.slides.length;
+      }, cfg.interval)
+    );
+
+    return () => timers.forEach(clearInterval);
+  });
+</script>
 
 <section class="hero-section wrap" data-screen-label="01 Hero">
   <div class="hero-top-row">
@@ -16,43 +71,45 @@ import { PERSONALITY } from '../data/skills.js';
   </div>
 
   <div class="hero-name-block">
-    <h1 class="hero-name" id="hero-name">
-      <span class="name-anastacia">Anastacia</span
+    <h1 class="hero-name">
+      <span class="name-anastacia">Anastacia</span>
       <br />
       Frost<span
         class="name-glyph"
         title="three things I am, in order of arrival"
-      >⌯</span>
+      >♥</span>
     </h1>
     <p class="hero-tagline">
       Graphic designer, web developer, and
-      <em class="tagline-em">UI/UX person</em>
-      — over ten years of finding the efficient solutions for straight-forward obstacles. Based in Michigan, fueled by <em class="tagline-em">boba</em> and
-      an unreasonable amount of video games.
+      <em class="tagline-em">UI/UX designer</em>
+      — ten years of shipping work that bridges brand, systems, and code. Based in Michigan.
     </p>
   </div>
 
   <div class="hero-ledger" role="list">
-    <div class="stat" role="listitem">
-      <div class="stat-key">Years in industry</div>
-      <div class="stat-val" data-target="10">0</div>
-      <div class="stat-sub" data-hover="started 2013, mostly on purpose">and counting</div>
-    </div>
-    <div class="stat" role="listitem">
-      <div class="stat-key">Projects shipped</div>
-      <div class="stat-val" data-target="147">0</div>
-      <div class="stat-sub" data-hover="give or take a redesign">across 6 industries</div>
-    </div>
-    <div class="stat stat--last" role="listitem">
-      <div class="stat-key">List of To Do's</div>
-      <div class="stat-val stat-val--text">52</div>
-      <div class="stat-sub" data-hover="it's never ending">when will it be 0</div>
-    </div>
-  </div>
-
-  <div class="hero-hint" aria-hidden="true">
-    <span class="hero-arrow"></span>
-    <span>scroll · selected work below</span>
+    {#each STATS as cfg, i}
+      <div
+        class="stat"
+        class:stat--last={i === STATS.length - 1}
+        role="listitem"
+        onmouseenter={() => (paused[i] = true)}
+        onmouseleave={() => (paused[i] = false)}
+      >
+        <div class="stat-inner">
+          {#each [cfg.slides[indices[i]]] as slide (indices[i])}
+            <div
+              class="stat-content"
+              in:fly={{ y: 20, duration: 250, delay: 50 }}
+              out:fly={{ y: -20, duration: 200 }}
+            >
+              <div class="stat-key">{slide.key}</div>
+              <div class="stat-val">{slide.val}</div>
+              <div class="stat-sub">{slide.sub}</div>
+            </div>
+          {/each}
+        </div>
+      </div>
+    {/each}
   </div>
 </section>
 
@@ -92,8 +149,6 @@ import { PERSONALITY } from '../data/skills.js';
     gap: 10px;
   }
 
-  .coords { opacity: 0.6; }
-
   .blink-square {
     display: inline-block;
     width: 7px; height: 7px;
@@ -107,24 +162,9 @@ import { PERSONALITY } from '../data/skills.js';
   }
 
   /* ── name block ── */
-
   .hero-name-block {
     position: relative;
     margin-bottom: 80px;
-  }
-
-  .hero-section-num {
-    position: absolute;
-    top: -0.15em;
-    left: -0.05em;
-    font-family: var(--serif);
-    font-size: clamp(160px, 30vw, 420px);
-    line-height: 1;
-    color: var(--fg);
-    opacity: 0.028;
-    pointer-events: none;
-    user-select: none;
-    letter-spacing: -0.04em;
   }
 
   .hero-name {
@@ -143,7 +183,7 @@ import { PERSONALITY } from '../data/skills.js';
   }
 
   .name-glyph {
-    color: var(--fg-dim);
+    color: var(--accent-2);
     font-family: var(--mono);
     font-size: 0.16em;
     vertical-align: top;
@@ -188,6 +228,18 @@ import { PERSONALITY } from '../data/skills.js';
 
   .stat--last { border-right: none; }
 
+  .stat-inner {
+    position: relative;
+    overflow: hidden;
+    min-height: calc(clamp(40px, 5vw, 60px) + 64px);
+  }
+
+  .stat-content {
+    position: absolute;
+    width: 100%;
+    top: 0;
+  }
+
   .stat-key {
     font-size: 10px;
     letter-spacing: 0.16em;
@@ -210,27 +262,6 @@ import { PERSONALITY } from '../data/skills.js';
     font-size: 10px;
     color: var(--fg-dim);
     letter-spacing: 0.04em;
-    transition: opacity 0.2s;
-  }
-
-  /* ── hint ── */
-
-  .hero-hint {
-    margin-top: 60px;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--fg-dim);
-    letter-spacing: 0.05em;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .hero-arrow {
-    display: block;
-    width: 40px;
-    height: 1px;
-    background: var(--accent);
   }
 
   /* ── responsive ── */
@@ -245,42 +276,3 @@ import { PERSONALITY } from '../data/skills.js';
     .stat:nth-child(2) { border-bottom: 0.5px solid var(--line); }
   }
 </style>
-
-<script>
-  // count-up animation
-  document.querySelectorAll<HTMLElement>('[data-target]').forEach(el => {
-    const target = parseInt(el.dataset.target ?? '0', 10);
-    if (isNaN(target)) return;
-    const dur = 1400;
-    const start = performance.now();
-    function tick(now: number) {
-      const t = Math.min(1, (now - start) / dur);
-      const eased = 1 - Math.pow(1 - t, 3);
-      el.textContent = Math.round(target * eased).toLocaleString();
-      if (t < 1) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-  });
-
-  // stat hover reveals alternate text
-  document.querySelectorAll<HTMLElement>('.stat').forEach(stat => {
-    const sub = stat.querySelector<HTMLElement>('.stat-sub');
-    if (!sub || !sub.dataset.hover) return;
-    const original = sub.textContent ?? '';
-    stat.addEventListener('mouseenter', () => { sub.textContent = sub.dataset.hover ?? original; });
-    stat.addEventListener('mouseleave', () => { sub.textContent = original; });
-  });
-
-  // occasional name glitch
-  const heroName = document.getElementById('hero-name');
-  if (heroName) {
-    function scheduleGlitch() {
-      setTimeout(() => {
-        heroName!.classList.add('glitching');
-        setTimeout(() => heroName!.classList.remove('glitching'), 320);
-        scheduleGlitch();
-      }, 6000 + Math.random() * 10000);
-    }
-    scheduleGlitch();
-  }
-</script>
